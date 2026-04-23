@@ -1,14 +1,10 @@
 // widgets/product_item.dart
+import 'package:first_app/widgets/product_model.dart';
 import 'package:flutter/material.dart';
 
 class ProductItem extends StatelessWidget {
-  const ProductItem({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.price,
-  });
-  final String image, title, price;
+  const ProductItem({super.key, required this.product});
+  final ProductModel product;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -34,8 +30,8 @@ class ProductItem extends StatelessWidget {
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15),
                     ),
-                    child: Image.asset(
-                      image,
+                    child: Image.network(
+                      product.imageUrl,
                       fit: BoxFit.cover,
                       width: double.infinity,
                     ),
@@ -63,7 +59,7 @@ class ProductItem extends StatelessWidget {
 
                       children: [
                         Text(
-                          title,
+                          product.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -72,7 +68,7 @@ class ProductItem extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "\$${price}",
+                          "\$${product.price}",
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -83,10 +79,10 @@ class ProductItem extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: EdgeInsets.only(right: 8.0),
                     child: IconButton.filled(
                       onPressed: () {},
-                      icon: Icon(Icons.add),
+                      icon: Icon(Icons.delete),
                     ),
                   ),
                 ],
