@@ -1,4 +1,7 @@
 // screens/login_screen.dart
+import 'dart:developer';
+
+import 'package:first_app/validators.dart';
 import 'package:first_app/widgets/auth_header.dart';
 import 'package:first_app/widgets/auth_remeber_and_recovery.dart';
 import 'package:first_app/widgets/custom_elvated_button.dart';
@@ -7,8 +10,24 @@ import 'package:first_app/widgets/titled_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> myKey = GlobalKey();
+
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,123 +35,154 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AuthHeader(
-                title: "Hi, Wecome Back! 👋",
-                subTitle: "Hello again, you’ve been missed!",
-              ),
-              SizedBox(height: 51),
-              TitledTextField(title: 'Email'),
-              SizedBox(height: 20),
-              TitledTextField(title: 'Password'),
-              SizedBox(height: 20),
-              AuthRememberAndRecovery(),
-              SizedBox(height: 20),
-
-              CustomElevatedButton(
-                title: 'Login',
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Scaffold();
-                      },
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 30),
-              Row(
+          child: SingleChildScrollView(
+            child: Form(
+              key: myKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: Divider(color: Colors.grey, thickness: 2)),
-                  Text(
-                    "  Or With  ",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  AuthHeader(
+                    title: "Hi, Wecome Back! 👋",
+                    subTitle: "Hello again, you’ve been missed!",
                   ),
-                  Expanded(child: Divider(color: Colors.grey, thickness: 2)),
-                ],
-              ),
+                  SizedBox(height: 51),
+                  TitledTextField(
+                    title: 'Email',
+                    controller: emailController,
+                    validator: (emailVal) {
+                      return Validator.validateEmail(emailVal ?? '');
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  TitledTextField(
+                    title: 'Password',
+                    controller: passwordController,
+                    validator: (passVal) {
+                      return Validator.validatePassword(passVal ?? '');
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  AuthRememberAndRecovery(),
+                  SizedBox(height: 20),
 
-              SizedBox(height: 40),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(15),
+                  CustomElevatedButton(
+                    title: 'Login',
+                    onPressed: () {
+                      if (myKey.currentState!.validate()) {
+                        log(
+                          "Email: ${emailController.text}, Password: ${passwordController.text}",
+                        );
+                      } else {
+                        log("Failed");
+                      }
+
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) {
+                      //       return Scaffold();
+                      //     },
+                      //   ),
+                      // );
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(color: Colors.grey, thickness: 2),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Text(
+                        "  Or With  ",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(color: Colors.grey, thickness: 2),
+                      ),
+                    ],
+                  ),
 
-                        spacing: 10,
-                        children: [
-                          SvgPicture.asset('assets/icons/github.svg'),
-                          Text(
-                            "Github",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
+                  SizedBox(height: 40),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 2),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 10,
-                        children: [
-                          SvgPicture.asset('assets/icons/gitlab.svg'),
-                          Text(
-                            "Gitlab",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+
+                            spacing: 10,
+                            children: [
+                              SvgPicture.asset('assets/icons/github.svg'),
+                              Text(
+                                "Github",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 2),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              SvgPicture.asset('assets/icons/gitlab.svg'),
+                              Text(
+                                "Gitlab",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don’t have an account ? ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        CustomTextButon(
+                          text: "Sign Up",
+                          textColor: Color(0xff4E0189),
+                          onPressed: () {},
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don’t have an account ? ",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  CustomTextButon(
-                    text: "Sign Up",
-                    textColor: Color(0xff4E0189),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

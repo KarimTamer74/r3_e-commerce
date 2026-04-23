@@ -1,16 +1,21 @@
-// titled_text_field.dart
+// widgets/titled_text_field.dart
 import 'package:flutter/material.dart';
 
 class TitledTextField extends StatefulWidget {
-  const TitledTextField({super.key, required this.title});
+  const TitledTextField({
+    super.key,
+    required this.title,
+    required this.controller,
+    this.validator,
+  });
   final String title;
-
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
   @override
   State<TitledTextField> createState() => _TitledTextFieldState();
 }
 
 class _TitledTextFieldState extends State<TitledTextField> {
-  final TextEditingController myController = TextEditingController();
   bool isVisable = true;
   @override
   Widget build(BuildContext context) {
@@ -26,17 +31,23 @@ class _TitledTextFieldState extends State<TitledTextField> {
           ),
         ),
         SizedBox(height: 10),
-        TextField(
-          obscureText: isVisable,
-          controller: myController,
+        TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: widget.validator,
+          controller: widget.controller,
+          obscureText: widget.title == 'Password' ? isVisable : false,
           decoration: InputDecoration(
-            suffixIcon: IconButton(
-              onPressed: () {
-                isVisable = !isVisable;
-                setState(() {});
-              },
-              icon: Icon(Icons.visibility),
-            ),
+            suffixIcon: widget.title == 'Password'
+                ? IconButton(
+                    onPressed: () {
+                      isVisable = !isVisable;
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      isVisable ? Icons.visibility : Icons.visibility_off,
+                    ),
+                  )
+                : null,
             hintText: 'Please Enter Your ${widget.title}',
             hintStyle: TextStyle(fontSize: 14),
             enabledBorder: OutlineInputBorder(
@@ -46,6 +57,10 @@ class _TitledTextFieldState extends State<TitledTextField> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide(color: Colors.deepPurpleAccent),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.red),
             ),
           ),
         ),
