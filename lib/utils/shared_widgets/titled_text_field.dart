@@ -1,4 +1,4 @@
-// widgets/titled_text_field.dart
+// utils/shared_widgets/titled_text_field.dart
 import 'package:flutter/material.dart';
 
 class TitledTextField extends StatefulWidget {
@@ -37,6 +37,7 @@ class _TitledTextFieldState extends State<TitledTextField> {
           controller: widget.controller,
           obscureText: widget.title == 'Password' ? isVisable : false,
           decoration: InputDecoration(
+            
             suffixIcon: widget.title == 'Password'
                 ? IconButton(
                     onPressed: () {

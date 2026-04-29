@@ -1,32 +1,71 @@
-// screens/sign_up_screen.dart
+// features/auth/presentation/screens/login_screen.dart
 import 'dart:developer';
 
-import 'package:first_app/validators.dart';
-import 'package:first_app/widgets/auth_header.dart';
-import 'package:first_app/widgets/auth_remeber_and_recovery.dart';
-import 'package:first_app/widgets/custom_elvated_button.dart';
-import 'package:first_app/widgets/custom_text_buton.dart';
-import 'package:first_app/widgets/titled_text_field.dart';
+import 'package:dio/dio.dart';
+import 'package:first_app/features/auth/presentation/screens/sign_up_screen.dart';
+import 'package:first_app/utils/validators.dart';
+import 'package:first_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:first_app/features/auth/presentation/widgets/auth_remeber_and_recovery.dart';
+import 'package:first_app/utils/shared_widgets/custom_elvated_button.dart';
+import 'package:first_app/utils/shared_widgets/custom_text_buton.dart';
+import 'package:first_app/utils/shared_widgets/titled_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController nameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> myKey = GlobalKey();
+  final Dio dio = Dio();
+  bool isLoading = false;
+  Future<void> login() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final Response response = await dio.post(
+        'https://api.escuelajs.co/api/v1/auth/login',
+        data: {
+          "email": emailController.text,
+          "password": passwordController.text,
+        },
+      );
+      log("Response: $response");
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Login Success")));
+    } on DioException catch (e) {
+      log("Error Dio: ${e.response?.data['message']}");
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login Failed: ${e.response?.data['message']??'error'}")),
+      );
+    } on Exception catch (e) {
+      log("Error: $e");
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Login Failed")));
+    }
+  }
 
   @override
   void dispose() {
     super.dispose();
-    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
   }
@@ -44,19 +83,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AuthHeader(
-                    title: "Create an account",
-                    subTitle: "Connect with your friends today!",
+                    title: "Hi, Wecome Back! 👋",
+                    subTitle: "Hello again, you’ve been missed!",
                   ),
                   SizedBox(height: 51),
-                  TitledTextField(
-                    title: 'UserName',
-                    controller: nameController,
-                    validator: (nameVal) {
-                      return Validator.validateUserName(nameVal ?? '');
-                    },
-                  ),
-                  SizedBox(height: 20),
-
                   TitledTextField(
                     title: 'Email',
                     controller: emailController,
@@ -77,12 +107,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 20),
 
                   CustomElevatedButton(
-                    title: 'Sign Up',
+                    title: isLoading ? 'Loading.........' : 'Login',
                     onPressed: () async {
                       if (myKey.currentState!.validate()) {
                         log(
-                          "Name: ${nameController.text},Email: ${emailController.text}, Password: ${passwordController.text}",
+                          "Email: ${emailController.text}, Password: ${passwordController.text}",
                         );
+                        await login();
                       } else {
                         log("Failed");
                       }
@@ -176,7 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Already have an account ?",
+                          "Don’t have an account ? ",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -184,10 +215,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         CustomTextButon(
-                          text: "Login",
+                          text: "Sign Up",
                           textColor: Color(0xff4E0189),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SignUpScreen();
+                                },
+                              ),
+                            );
                           },
                         ),
                       ],

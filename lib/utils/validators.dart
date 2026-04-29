@@ -1,5 +1,5 @@
-// validators.dart
-import 'package:first_app/string_manager.dart';
+// utils/validators.dart
+import 'package:first_app/utils/string_manager.dart';
 
 class Validator {
   static String? validateEmail(String email) {
@@ -7,13 +7,9 @@ class Validator {
 
     if (email.isEmpty) {
       return AppStrings.emailRequired;
-    } else if (!email.split("@")[0].contains(RegExp(r'^.{6,}$'))) {
-      return AppStrings.emailMinLength;
     } else if (!regex.hasMatch(email)) {
       if (!email.contains("@gmail.com")) {
         return AppStrings.emailMustEndGmail;
-      } else {
-        return AppStrings.emailInvalidFormat;
       }
     }
     return null;
@@ -23,21 +19,21 @@ class Validator {
     if (password.isEmpty) {
       return AppStrings.fieldRequired;
     }
-    if (password.length < 8) {
-      return AppStrings.passwordAtLeast8Char;
-    }
-    if (!RegExp(r'[A-Z]').hasMatch(password)) {
-      return AppStrings.passwordAtLeast1Uppercase;
-    }
-    if (!RegExp(r'[a-z]').hasMatch(password)) {
-      return AppStrings.passwordAtLeast1Lowercase;
-    }
-    if (!RegExp(r'\d').hasMatch(password)) {
-      return AppStrings.passwordAtLeast1Number;
-    }
-    if (!RegExp(r'[@$!%*?&]').hasMatch(password)) {
-      return AppStrings.passwordAtLeast1SpecialChar;
-    }
+    // if (password.length < 8) {
+    //   return AppStrings.passwordAtLeast8Char;
+    // }
+    // if (!RegExp(r'[A-Z]').hasMatch(password)) {
+    //   return AppStrings.passwordAtLeast1Uppercase;
+    // }
+    // if (!RegExp(r'[a-z]').hasMatch(password)) {
+    //   return AppStrings.passwordAtLeast1Lowercase;
+    // }
+    // if (!RegExp(r'\d').hasMatch(password)) {
+    //   return AppStrings.passwordAtLeast1Number;
+    // }
+    // if (!RegExp(r'[@$!%*?&]').hasMatch(password)) {
+    //   return AppStrings.passwordAtLeast1SpecialChar;
+    // }
     // if (passwordController.text != confirmPassController.text) {
     //   return AppStrings.passwordNotTheSame;
     // }

@@ -1,5 +1,5 @@
-// widgets/auth_remeber_and_recovery.dart
-import 'package:first_app/widgets/custom_text_buton.dart';
+// features/auth/presentation/widgets/auth_remeber_and_recovery.dart
+import 'package:first_app/utils/shared_widgets/custom_text_buton.dart';
 import 'package:flutter/material.dart';
 
 class AuthRememberAndRecovery extends StatefulWidget {
@@ -23,7 +23,7 @@ class _AuthRememberAndRecoveryState extends State<AuthRememberAndRecovery> {
           child: Checkbox(
             checkColor: Colors.deepPurple,
             activeColor: Colors.white,
-            side: BorderSide(color: Colors.white),
+            side: BorderSide(color: Colors.grey),
             value: isChecked,
             onChanged: (newVal) {
               isChecked = newVal;

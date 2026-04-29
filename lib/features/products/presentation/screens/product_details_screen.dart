@@ -1,5 +1,5 @@
-// screens/product_details_screen.dart
-import 'package:first_app/widgets/product_model.dart';
+// features/products/presentation/screens/product_details_screen.dart
+import 'package:first_app/features/products/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

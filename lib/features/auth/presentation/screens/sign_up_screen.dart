@@ -1,23 +1,24 @@
-// screens/login_screen.dart
+// features/auth/presentation/screens/sign_up_screen.dart
 import 'dart:developer';
 
-import 'package:first_app/validators.dart';
-import 'package:first_app/widgets/auth_header.dart';
-import 'package:first_app/widgets/auth_remeber_and_recovery.dart';
-import 'package:first_app/widgets/custom_elvated_button.dart';
-import 'package:first_app/widgets/custom_text_buton.dart';
-import 'package:first_app/widgets/titled_text_field.dart';
+import 'package:first_app/utils/validators.dart';
+import 'package:first_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:first_app/features/auth/presentation/widgets/auth_remeber_and_recovery.dart';
+import 'package:first_app/utils/shared_widgets/custom_elvated_button.dart';
+import 'package:first_app/utils/shared_widgets/custom_text_buton.dart';
+import 'package:first_app/utils/shared_widgets/titled_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> myKey = GlobalKey();
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     super.dispose();
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
   }
@@ -42,10 +44,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AuthHeader(
-                    title: "Hi, Wecome Back! 👋",
-                    subTitle: "Hello again, you’ve been missed!",
+                    title: "Create an account",
+                    subTitle: "Connect with your friends today!",
                   ),
                   SizedBox(height: 51),
+                  TitledTextField(
+                    title: 'UserName',
+                    controller: nameController,
+                    validator: (nameVal) {
+                      return Validator.validateUserName(nameVal ?? '');
+                    },
+                  ),
+                  SizedBox(height: 20),
+
                   TitledTextField(
                     title: 'Email',
                     controller: emailController,
@@ -66,11 +77,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
 
                   CustomElevatedButton(
-                    title: 'Login',
-                    onPressed: () {
+                    title: 'Sign Up',
+                    onPressed: () async {
                       if (myKey.currentState!.validate()) {
                         log(
-                          "Email: ${emailController.text}, Password: ${passwordController.text}",
+                          "Name: ${nameController.text},Email: ${emailController.text}, Password: ${passwordController.text}",
                         );
                       } else {
                         log("Failed");
@@ -165,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don’t have an account ? ",
+                          "Already have an account ?",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -173,9 +184,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         CustomTextButon(
-                          text: "Sign Up",
+                          text: "Login",
                           textColor: Color(0xff4E0189),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
                       ],
                     ),

@@ -1,15 +1,22 @@
-// screens/profile_screen.dart
-import 'package:first_app/widgets/custom_profile_item.dart';
-import 'package:first_app/widgets/profile_item_model.dart';
+// features/profile/presentation/screens/profile_screen.dart
+import 'package:first_app/features/profile/presentation/widgets/custom_profile_item.dart';
+import 'package:first_app/features/profile/data/models/profile_item_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({
-    super.key,
-    required this.myItems,
-  });
+  const ProfileScreen({super.key});
 
-  final List<ProfileItemModel> myItems;
+  static List<ProfileItemModel> myItems = [
+    ProfileItemModel(title: "Favorites", icon: Icons.favorite_border_outlined),
+    ProfileItemModel(title: "Downloads", icon: Icons.location_on_outlined),
+    ProfileItemModel(title: "Locations", icon: Icons.map),
+    ProfileItemModel(title: "Subscription", icon: Icons.subscript),
+    ProfileItemModel(title: "Display", icon: Icons.smart_display_outlined),
+    ProfileItemModel(title: "Clean Cache", icon: Icons.cached_outlined),
+    ProfileItemModel(title: "Clean Cache", icon: Icons.cached_outlined),
+    ProfileItemModel(title: "Clean Cache", icon: Icons.cached_outlined),
+    ProfileItemModel(title: "Clean Cache", icon: Icons.cached_outlined),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-    
+
             Expanded(
               child: ListView.builder(
                 itemCount: myItems.length,

@@ -1,7 +1,7 @@
-// screens/filter_products_by_category_screen.dart
+// features/products/presentation/screens/filter_products_by_category_screen.dart
 import 'package:dio/dio.dart';
-import 'package:first_app/widgets/product_item.dart';
-import 'package:first_app/widgets/product_model.dart';
+import 'package:first_app/features/products/presentation/widgets/product_item.dart';
+import 'package:first_app/features/products/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 
 class FilterProductsByCategoryScreen extends StatefulWidget {

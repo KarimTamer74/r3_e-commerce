@@ -1,12 +1,21 @@
-// widgets/product_item.dart
-import 'package:first_app/widgets/product_model.dart';
+// features/products/presentation/widgets/product_item.dart
+import 'dart:developer';
+
+import 'package:first_app/features/products/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 
-class ProductItem extends StatelessWidget {
-  const ProductItem({super.key, required this.product});
+class ProductItem extends StatefulWidget {
+  const ProductItem({super.key, required this.product, this.onPressed});
   final ProductModel product;
+  final void Function()? onPressed;
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
+    log("elfbcerklfbcler");
     return InkWell(
       onTap: () {
         // Navigator.push(
@@ -31,7 +40,7 @@ class ProductItem extends StatelessWidget {
                       topRight: Radius.circular(15),
                     ),
                     child: Image.network(
-                      product.imageUrl,
+                      widget.product.images.first,
                       fit: BoxFit.cover,
                       width: double.infinity,
                     ),
@@ -59,7 +68,7 @@ class ProductItem extends StatelessWidget {
 
                       children: [
                         Text(
-                          product.title,
+                          widget.product.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -68,7 +77,7 @@ class ProductItem extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "\$${product.price}",
+                          "\$${widget.product.price}",
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -81,7 +90,7 @@ class ProductItem extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 8.0),
                     child: IconButton.filled(
-                      onPressed: () {},
+                      onPressed: widget.onPressed,
                       icon: Icon(Icons.delete),
                     ),
                   ),

@@ -1,13 +1,15 @@
-// widgets/product_model.dart
+// models/product_model.dart
 class ProductModel {
-  final String imageUrl, title,desc;
-  final int price,id;
+  final String imageUrl, title, desc;
+  final int price, id;
+  final List<dynamic> images;
   ProductModel({
-    required this.id,
     required this.imageUrl,
     required this.title,
     required this.price,
-    required this.desc
+    required this.desc,
+    required this.id,
+    required this.images,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +18,8 @@ class ProductModel {
       imageUrl: json['category']['image'],
       title: json['title'],
       price: json['price'],
-      desc: json['description']
+      desc: json['description'],
+      images: json['images'],
     );
   }
 }
