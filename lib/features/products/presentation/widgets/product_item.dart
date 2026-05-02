@@ -13,6 +13,7 @@ class ProductItem extends StatefulWidget {
 }
 
 class _ProductItemState extends State<ProductItem> {
+  bool isFav = false;
   @override
   Widget build(BuildContext context) {
     log("elfbcerklfbcler");
@@ -49,8 +50,16 @@ class _ProductItemState extends State<ProductItem> {
                     right: 6,
                     top: 6,
                     child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.favorite_border, size: 36),
+                      onPressed: () {
+                        setState(() {
+                          isFav = !isFav;
+                        });
+                      },
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        size: 36,
+                        color: isFav ? Colors.red : Colors.black,
+                      ),
                     ),
                   ),
                 ],
@@ -87,12 +96,12 @@ class _ProductItemState extends State<ProductItem> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: IconButton.filled(
-                      onPressed: widget.onPressed,
-                      icon: Icon(Icons.delete),
+                  IconButton.filled(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.transparent,
                     ),
+                    onPressed: widget.onPressed,
+                    icon: Icon(Icons.delete, color: Colors.red),
                   ),
                 ],
               ),

@@ -1,15 +1,20 @@
 // features/auth/presentation/screens/login_screen.dart
+
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
+import 'package:first_app/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:first_app/features/auth/presentation/cubits/auth_states.dart';
 import 'package:first_app/features/auth/presentation/screens/sign_up_screen.dart';
-import 'package:first_app/utils/validators.dart';
 import 'package:first_app/features/auth/presentation/widgets/auth_header.dart';
 import 'package:first_app/features/auth/presentation/widgets/auth_remeber_and_recovery.dart';
+import 'package:first_app/features/products/presentation/cubits/categories_cubit.dart/categories_cubit.dart';
+import 'package:first_app/features/products/presentation/screens/products_screen.dart';
 import 'package:first_app/utils/shared_widgets/custom_elvated_button.dart';
 import 'package:first_app/utils/shared_widgets/custom_text_buton.dart';
 import 'package:first_app/utils/shared_widgets/titled_text_field.dart';
+import 'package:first_app/utils/validators.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -23,45 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> myKey = GlobalKey();
-  final Dio dio = Dio();
-  bool isLoading = false;
-  Future<void> login() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      final Response response = await dio.post(
-        'https://api.escuelajs.co/api/v1/auth/login',
-        data: {
-          "email": emailController.text,
-          "password": passwordController.text,
-        },
-      );
-      log("Response: $response");
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Login Success")));
-    } on DioException catch (e) {
-      log("Error Dio: ${e.response?.data['message']}");
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login Failed: ${e.response?.data['message']??'error'}")),
-      );
-    } on Exception catch (e) {
-      log("Error: $e");
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Login Failed")));
-    }
-  }
 
   @override
   void dispose() {
@@ -106,26 +72,67 @@ class _LoginScreenState extends State<LoginScreen> {
                   AuthRememberAndRecovery(),
                   SizedBox(height: 20),
 
-                  CustomElevatedButton(
-                    title: isLoading ? 'Loading.........' : 'Login',
-                    onPressed: () async {
-                      if (myKey.currentState!.validate()) {
-                        log(
-                          "Email: ${emailController.text}, Password: ${passwordController.text}",
+                  BlocConsumer<AuthCubit, AuthStates>(
+                    listener: (context, state) {
+                      if (state is LoginLoadingState) {
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return Center(child: CircularProgressIndicator());
+                        //   },
+                        // );
+                      } else if (state is LoginFailureState) {
+                        // Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Failure"),
+                            backgroundColor: Colors.red,
+                          ),
                         );
-                        await login();
-                      } else {
-                        log("Failed");
+                        log("Failure", name: 'UI');
+                      } else if (state is LoginSuccessState) {
+                        // Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Success"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider(
+                              create: (context) => CategoriesCubit(),
+                              child: ProductsScreen(),
+                            ),
+                          ),
+                        );
+                        log('Success', name: 'UI');
                       }
+                    },
 
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) {
-                      //       return Scaffold();
-                      //     },
-                      //   ),
-                      // );
+                    builder: (context, state) {
+                      return state is LoginLoadingState
+                          ? ElevatedButton(
+                              onPressed: () {},
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          : CustomElevatedButton(
+                              title: 'Login',
+                              onPressed: () async {
+                                if (myKey.currentState!.validate()) {
+                                  log(
+                                    "Email: ${emailController.text}, Password: ${passwordController.text}",
+                                  );
+                                  await BlocProvider.of<AuthCubit>(
+                                    context,
+                                  ).login(
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                                }
+                              },
+                            );
                     },
                   ),
                   SizedBox(height: 30),

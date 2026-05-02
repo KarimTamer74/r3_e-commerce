@@ -2,9 +2,10 @@
 import 'dart:developer';
 
 import 'package:first_app/features/products/data/data_source/remote_data_source.dart';
-import 'package:first_app/features/products/data/models/product_model.dart';
 import 'package:first_app/features/products/presentation/cubits/categories_cubit.dart/categories_cubit.dart';
 import 'package:first_app/features/products/presentation/cubits/categories_cubit.dart/categories_states.dart';
+import 'package:first_app/features/products/presentation/cubits/products_cubit/products_cubit.dart';
+import 'package:first_app/features/products/presentation/cubits/products_cubit/products_states.dart';
 import 'package:first_app/features/products/presentation/widgets/product_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,14 +19,12 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  late Future<List<ProductModel>> products;
-
   RemoteDataSource remoteDataSource = RemoteDataSource();
   @override
   void initState() {
     super.initState();
     BlocProvider.of<CategoriesCubit>(context).getCategories();
-    products = remoteDataSource.getProducts();
+    BlocProvider.of<ProductsCubit>(context).getProducts();
   }
 
   @override
@@ -91,15 +90,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
             Expanded(
               flex: 4,
-              child: FutureBuilder(
-                future: products,
-                builder: (context, snapShot) {
-                  if (snapShot.connectionState == ConnectionState.waiting) {
+              child: BlocConsumer<ProductsCubit, ProductsStates>(
+                builder: (context, state) {
+                  if (state is ProductsLoadingState) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (snapShot.hasData) {
-                    final products = snapShot.data;
+                  } else if (state is ProductsFailureState) {
+                    return Text(state.errorMess);
+                  } else if (state is ProductsSuccessState) {
                     return GridView.builder(
-                      itemCount: products!.length,
+                      itemCount: state.products.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         mainAxisSpacing: 10,
@@ -108,23 +107,48 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                       itemBuilder: (BuildContext context, int index) {
                         return ProductItem(
-                          product: products[index],
+                          product: state.products[index],
                           onPressed: () async {
-                            await remoteDataSource.deleteProduct(
-                              products[index].id,
-                            );
-                            await remoteDataSource.getProducts();
+                            await BlocProvider.of<ProductsCubit>(
+                              context,
+                            ).deleteProduct(state.products[index].id);
                           },
                         );
                       },
                     );
-                  } else if (snapShot.hasError) {
-                    return Text(
-                      "Error: ${snapShot.error}",
-                      style: TextStyle(fontSize: 30),
+                  }
+                  return Container(
+                    color: Colors.amber,
+                    width: double.infinity,
+                    height: 500,
+                  );
+                },
+                listener: (context, state) {
+                  if (state is DeleteProductLoading) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Center(child: CircularProgressIndicator());
+                      },
+                    );
+                  } else if (state is DeleteProductSuccess) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Deleting Success"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } else if (state is DeleteProductFailure) {
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Deleting Failure"),
+                        backgroundColor: Colors.red,
+                      ),
                     );
                   }
-                  return SizedBox();
                 },
               ),
             ),

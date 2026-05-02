@@ -25,7 +25,7 @@ class RemoteDataSource {
 
   Future<List> getCategoryData() async {
     final response = await dio.get(
-      'https://api.escuelajs.co/api/v1/categorierfrees',
+      'https://api.escuelajs.co/api/v1/categories',
     );
     log(response.toString());
     return response.data;
